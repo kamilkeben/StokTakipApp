@@ -27,6 +27,49 @@
             font-weight: 800; 
             margin-top: 120px;
         }
+
+        .update-notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+
+        .update-content {
+            text-align: center;
+        }
+
+        .update-content h3 {
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+
+        .update-content p {
+            margin: 0 0 15px 0;
+            color: #666;
+        }
+
+        .update-content button {
+            margin: 0 5px;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .update-content button:first-of-type {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .update-content button:last-of-type {
+            background: #f0f0f0;
+            color: #333;
+        }
     </style>
 </head>
 <body>
@@ -37,7 +80,54 @@
         <button onclick="window.location.href='toptanci.html'" class="menu-button">Toptancı Takip</button>
         <button onclick="window.location.href='veresiye.html'" class="menu-button">Veresiye Takip</button>
         <button onclick="window.location.href='siparis.html'" class="menu-button">Sipariş Takip</button>
-        <div class="copyright-text">Copyright © by Kamil Keben 2025</div>
+        <div class="copyright-text">Copyright by Kamil Keben 2025</div>
     </div>
+    <script>
+        // Uygulama versiyonu
+        const APP_VERSION = '1.0.0';
+        
+        // Güncelleme kontrolü
+        async function checkForUpdates() {
+            try {
+                const response = await fetch('https://api.github.com/repos/kamilkeben/StokTakipApp/releases/latest');
+                const data = await response.json();
+                
+                const latestVersion = data.tag_name;
+                if (latestVersion > APP_VERSION) {
+                    showUpdateNotification(latestVersion);
+                }
+            } catch (error) {
+                console.error('Güncelleme kontrolü yapılırken hata oluştu:', error);
+            }
+        }
+
+        // Güncelleme bildirimi göster
+        function showUpdateNotification(newVersion) {
+            const notification = document.createElement('div');
+            notification.className = 'update-notification';
+            notification.innerHTML = `
+                <div class="update-content">
+                    <h3>Yeni Güncelleme Mevcut!</h3>
+                    <p>Yeni versiyon (${newVersion}) kullanıma hazır.</p>
+                    <button onclick="downloadUpdate()">Güncelle</button>
+                    <button onclick="closeNotification(this)">Daha Sonra</button>
+                </div>
+            `;
+            document.body.appendChild(notification);
+        }
+
+        // Güncelleme indir
+        function downloadUpdate() {
+            window.location.href = 'https://github.com/kamilkeben/StokTakipApp/releases/latest';
+        }
+
+        // Bildirimi kapat
+        function closeNotification(element) {
+            element.closest('.update-notification').remove();
+        }
+
+        // Sayfa yüklendiğinde güncelleme kontrolü yap
+        window.addEventListener('load', checkForUpdates);
+    </script>
 </body>
 </html>

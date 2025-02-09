@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Toptancı Detay Sayfası</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .back-button {
+            padding: 8px 15px;
+            margin-right: 20px;
+            border: none;
+            background-color: #f0f0f0;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .back-button:hover {
+            background-color: #e0e0e0;
+        }
+
+        h1 {
+            margin: 0;
+            color: #333;
+        }
+
+        .container {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .info-section, .payment-section {
+            flex: 1;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .info-item {
+            margin-bottom: 15px;
+        }
+
+        .info-label {
+            font-weight: bold;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            color: #333;
+            font-size: 16px;
+        }
+
+        .payment-section input, .payment-section textarea {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .payment-section label {
+            display: block;
+            margin-bottom: 5px;
+            color: #666;
+            font-weight: bold;
+        }
+
+        .save-button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+
+        .save-button:hover {
+            background-color: #45a049;
+        }
+
+        .table-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-top: 30px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f8f8f8;
+            font-weight: bold;
+            color: #666;
+        }
+
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        .total-amount {
+            text-align: right;
+            font-weight: bold;
+            font-size: 18px;
+            color: #333;
+            padding: 10px;
+        }
+
+        .info-section input[type="date"] {
+            width: calc(50% - 5px);
+            padding: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .date-range {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .export-button {
+            background-color: #2196F3;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        .export-button:hover {
+            background-color: #1976D2;
+        }
+
+        .positive-amount {
+            color: green;
+        }
+
+        .negative-amount {
+            color: red;
+        }
+
+        .neutral-amount {
+            color: inherit;
+        }
+
+        .kalan-tutar-pozitif {
+            color: #2e7d32 !important; /* Yeşil */
+        }
+
+        .kalan-tutar-negatif {
+            color: #d32f2f !important; /* Kırmızı */
+        }
+
+        .kalan-tutar-sifir {
+            color: inherit !important; /* Normal yazı rengi */
+        }
+
+        .images-button {
+            background-color: #9C27B0;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        .images-button:hover {
+            background-color: #7B1FA2;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 80%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            color: #333;
+        }
+
+        .close {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #333;
+        }
+
+        .modal-buttons {
+            margin-bottom: 20px;
+        }
+
+        .add-image-btn, .delete-image-btn {
+            padding: 10px 20px;
+            margin-right: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .add-image-btn {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .delete-image-btn {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .add-image-btn:hover {
+            background-color: #45a049;
+        }
+
+        .delete-image-btn:hover {
+            background-color: #da190b;
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .gallery-item {
+            position: relative;
+            aspect-ratio: 1;
+            cursor: pointer;
+            border: 2px solid transparent;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            padding: 5px;
+            background-color: white;
+            transition: all 0.3s ease;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .gallery-item.selected {
+            border-color: #2196F3;
+            box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.3);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+
+        /* Fullscreen Image Modal */
+        .fullscreen-modal {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+            cursor: pointer;
+        }
+
+        .fullscreen-image {
+            max-width: 90%;
+            max-height: 90vh;
+            margin: auto;
+            display: block;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .delete-button {
+            background-color: #ff4444;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            min-width: 80px;
+        }
+
+        .delete-button:hover {
+            background-color: #cc0000;
+        }
+
+        .islem-row-alinan {
+            background-color: rgba(255, 0, 0, 0.1);
+        }
+
+        .islem-row-odenen {
+            background-color: rgba(0, 255, 0, 0.1);
+        }
+
+        td:last-child {
+            text-align: center;
+        }
+
+        .table-container {
+            margin: 20px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f4f4f4;
+            font-weight: bold;
+        }
+
+        tr:hover {
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <button onclick="window.location.href='toptanci.html'" class="back-button">← Geri</button>
+        <h1>Toptancı Detay Sayfası</h1>
+    </div>
+
+    <div class="container">
+        <div class="info-section">
+            <div class="info-item">
+                <div class="info-label">Ad Soyad</div>
+                <div class="info-value" id="adSoyadText"></div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Firma Adı</div>
+                <div class="info-value" id="firmaAdiText"></div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Telefon</div>
+                <div class="info-value" id="telefonNoText"></div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Tarih Aralığı</div>
+                <div class="date-range">
+                    <input type="date" id="startDate" onchange="islemleriGuncelle()">
+                    <input type="date" id="endDate" onchange="islemleriGuncelle()">
+                </div>
+            </div>
+            <button class="export-button" onclick="exportToExcel()">Excel'e Aktar</button>
+            <button class="images-button" onclick="openImagesModal()">Resimler</button>
+        </div>
+
+        <div class="payment-section">
+            <div>
+                <label for="alinan">Alınan Tutar</label>
+                <input type="number" id="alinan" placeholder="Alınan tutarı girin" onchange="hesaplaAltinGram()">
+            </div>
+            <div>
+                <label for="odenen">Ödenen Tutar</label>
+                <input type="number" id="odenen" placeholder="Ödenen tutarı girin" onchange="hesaplaAltinGram()">
+            </div>
+            <div>
+                <label for="altinGramFiyati">Altın Gram Fiyatı</label>
+                <input type="number" id="altinGramFiyati" placeholder="Altın gram fiyatını girin" onchange="hesaplaAltinGram()">
+            </div>
+            <div>
+                <label for="aciklama">Açıklama</label>
+                <textarea id="aciklama" rows="3" placeholder="Açıklama girin"></textarea>
+            </div>
+            <button class="save-button" onclick="kaydetVeGuncelle()">Kaydet</button>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Tarih</th>
+                    <th>Ad Soyad</th>
+                    <th>Firma Adı</th>
+                    <th>Telefon No</th>
+                    <th>Açıklama</th>
+                    <th>Alınan Tutar</th>
+                    <th>Ödenen Tutar</th>
+                    <th>Altın Gram Fiyatı</th>
+                    <th>Altın Gramı</th>
+                    <th>İşlemler</th>
+                </tr>
+            </thead>
+            <tbody id="islemlerTablosu"></tbody>
+        </table>
+        <div id="toplamKalan" class="total-amount">Toplam Altın Gramı: <span>0 gr</span></div>
+    </div>
+
+    <!-- Resim Galerisi Modal -->
+    <div id="imagesModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Resim Galerisi</h2>
+                <span class="close" onclick="closeImagesModal()">&times;</span>
+            </div>
+            <div class="modal-buttons">
+                <input type="file" id="imageInput" accept="image/*" style="display: none" onchange="handleImageUpload(event)">
+                <button class="add-image-btn" onclick="document.getElementById('imageInput').click()">Resim Ekle</button>
+                <button class="delete-image-btn" onclick="deleteSelectedImage()">Resim Sil</button>
+            </div>
+            <div id="gallery" class="gallery">
+                <!-- Resimler JavaScript ile eklenecek -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Tam Ekran Resim Modal -->
+    <div id="fullscreenModal" class="fullscreen-modal" onclick="closeFullscreen()">
+        <img id="fullscreenImage" class="fullscreen-image">
+    </div>
+
+    <script src="toptanci.js"></script>
+    <script>
+        // URL'den toptancı ID'sini al
+        const urlParams = new URLSearchParams(window.location.search);
+        const toptanciId = urlParams.get('id');
+
+        // Toptancı bilgilerini yükle
+        function toptanciBilgileriniYukle() {
+            const toptancilar = toptancilariGetir();
+            const toptanci = toptancilar.find(t => t.id === toptanciId);
+
+            if (toptanci) {
+                document.getElementById('adSoyadText').textContent = toptanci.adSoyad;
+                document.getElementById('firmaAdiText').textContent = toptanci.firmaAdi;
+                document.getElementById('telefonNoText').textContent = toptanci.telefonNo;
+                islemleriGuncelle();
+            } else {
+                alert('Toptancı bulunamadı!');
+                window.location.href = 'toptanci.html';
+            }
+        }
+
+        // Sayfa yüklendiğinde toptancı bilgilerini yükle
+        document.addEventListener('DOMContentLoaded', toptanciBilgileriniYukle);
+
+        // Tarih ve saat formatı
+        function formatTarihSaat(date) {
+            const options = { 
+                year: 'numeric', 
+                month: 'numeric', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            };
+            return new Date(date).toLocaleString('tr-TR', options);
+        }
+
+        // İşlem kaydet
+        function kaydetVeGuncelle() {
+            const alinan = parseFloat(document.getElementById('alinan').value) || 0;
+            const odenen = parseFloat(document.getElementById('odenen').value) || 0;
+            const altinGramFiyati = parseFloat(document.getElementById('altinGramFiyati').value) || 0;
+            const aciklama = document.getElementById('aciklama').value;
+
+            if (alinan === 0 && odenen === 0) {
+                alert('Lütfen alınan veya ödenen tutarı girin!');
+                return;
+            }
+
+            if (altinGramFiyati === 0) {
+                alert('Lütfen altın gram fiyatını girin!');
+                return;
+            }
+
+            // Altın gram hesaplama
+            let altinGrami = 0;
+            if (alinan > 0) {
+                altinGrami = alinan / altinGramFiyati;
+            } else if (odenen > 0) {
+                altinGrami = odenen / altinGramFiyati;
+            }
+
+            const islem = {
+                tarih: new Date().toISOString(),
+                toptanciId: toptanciId,
+                adSoyad: document.getElementById('adSoyadText').textContent,
+                firmaAdi: document.getElementById('firmaAdiText').textContent,
+                telefonNo: document.getElementById('telefonNoText').textContent,
+                aciklama: aciklama,
+                alinan: alinan,
+                odenen: odenen,
+                altinGramFiyati: altinGramFiyati,
+                altinGrami: altinGrami,
+                islemTipi: alinan > 0 ? 'alinan' : 'odenen'
+            };
+
+            let islemler = JSON.parse(localStorage.getItem('islemler')) || [];
+            islemler.push(islem);
+            localStorage.setItem('islemler', JSON.stringify(islemler));
+
+            // Formu temizle
+            document.getElementById('alinan').value = '';
+            document.getElementById('odenen').value = '';
+            document.getElementById('aciklama').value = '';
+            document.getElementById('altinGramFiyati').value = '';
+            
+            // Input'ları aktif et
+            document.getElementById('alinan').disabled = false;
+            document.getElementById('odenen').disabled = false;
+            
+            // Tabloyu güncelle
+            islemleriGuncelle();
+            alert('İşlem başarıyla kaydedildi!');
+        }
+
+        function islemleriGuncelle() {
+            const islemler = JSON.parse(localStorage.getItem('islemler')) || [];
+            const tbody = document.getElementById('islemlerTablosu');
+            tbody.innerHTML = '';
+
+            let toplamAltinGram = 0;
+
+            const filtrelenmisIslemler = islemler.filter(islem => islem.toptanciId === toptanciId);
+            filtrelenmisIslemler.sort((a, b) => new Date(b.tarih) - new Date(a.tarih));
+
+            filtrelenmisIslemler.forEach(islem => {
+                const tr = document.createElement('tr');
+                const tarih = new Date(islem.tarih);
+
+                // Satır rengini belirle
+                tr.className = islem.islemTipi === 'alinan' ? 'islem-row-alinan' : 'islem-row-odenen';
+
+                // Toplam altın gramı hesaplama
+                const islemAltinGram = islem.islemTipi === 'alinan' ? -islem.altinGrami : islem.altinGrami;
+                toplamAltinGram += islemAltinGram;
+
+                tr.innerHTML = `
+                    <td>${formatTarihSaat(tarih)}</td>
+                    <td>${islem.adSoyad}</td>
+                    <td>${islem.firmaAdi}</td>
+                    <td>${islem.telefonNo}</td>
+                    <td>${islem.aciklama || '-'}</td>
+                    <td>${formatPara(islem.alinan)}</td>
+                    <td>${formatPara(islem.odenen)}</td>
+                    <td>${formatPara(islem.altinGramFiyati)}</td>
+                    <td>${Math.abs(islem.altinGrami).toFixed(2)} gr</td>
+                    <td>
+                        <button onclick="islemSil('${islem.tarih}')" class="delete-button">Sil</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // Toplam altın gramını güncelle ve renklendirme yap
+            const toplamElement = document.getElementById('toplamKalan');
+            const amountClass = toplamAltinGram > 0 ? 'positive-amount' : 
+                              toplamAltinGram < 0 ? 'negative-amount' : 
+                              'neutral-amount';
+            
+            toplamElement.innerHTML = `Toplam Altın Gramı: <span class="${amountClass}">${toplamAltinGram.toFixed(2)} gr</span>`;
+        }
+
+        function islemSil(tarih) {
+            if (confirm('Bu işlemi silmek istediğinize emin misiniz?')) {
+                let islemler = JSON.parse(localStorage.getItem('islemler')) || [];
+                islemler = islemler.filter(islem => islem.tarih !== tarih);
+                localStorage.setItem('islemler', JSON.stringify(islemler));
+                islemleriGuncelle();
+            }
+        }
+
+        // Excel'e aktarma fonksiyonu
+        function exportToExcel() {
+            const toptanciAdi = document.querySelector('#firmaAdiText').textContent;
+            const adSoyad = document.querySelector('#adSoyadText').textContent;
+            const telefonNo = document.querySelector('#telefonNoText').textContent;
+
+            if (!toptanciId) {
+                alert('Toptancı bilgisi bulunamadı!');
+                return;
+            }
+
+            // Tarih aralığını al
+            const baslangicTarihi = document.getElementById('startDate').value;
+            const bitisTarihi = document.getElementById('endDate').value;
+
+            // Toptancı işlemlerini al
+            let islemler = JSON.parse(localStorage.getItem('islemler')) || [];
+
+            // Sadece bu toptancının işlemlerini filtrele
+            islemler = islemler.filter(islem => islem.toptanciId === toptanciId);
+
+            // Tarih filtresini uygula
+            if (baslangicTarihi && bitisTarihi) {
+                islemler = islemler.filter(islem => {
+                    const islemTarihi = new Date(islem.tarih);
+                    return islemTarihi >= new Date(baslangicTarihi) && 
+                           islemTarihi <= new Date(bitisTarihi + 'T23:59:59');
+                });
+            }
+
+            // İşlemleri tarihe göre sırala (yeniden eskiye)
+            islemler.sort((a, b) => new Date(b.tarih) - new Date(a.tarih));
+
+            // Toplam altın gramını hesapla
+            let toplamAltinGram = 0;
+            islemler.forEach(islem => {
+                toplamAltinGram += parseFloat(islem.altinGrami) || 0;
+            });
+
+            // CSV başlıkları
+            let csvContent = "Tarih,Ad Soyad,Firma Adı,Telefon No,Açıklama,Alınan Tutar,Ödenen Tutar,Altın Gram Fiyatı,Altın Gramı\n";
+
+            // Verileri CSV formatına dönüştür
+            islemler.forEach((islem, index) => {
+                const tarih = new Date(islem.tarih);
+                csvContent += [
+                    `${tarih.toLocaleDateString()} ${tarih.toLocaleTimeString()}`,
+                    islem.adSoyad,
+                    islem.firmaAdi,
+                    islem.telefonNo,
+                    islem.aciklama || '-',
+                    formatPara(islem.alinan),
+                    formatPara(islem.odenen),
+                    formatPara(islem.altinGramFiyati),
+                    islem.altinGrami.toFixed(2) + ' gr'
+                ].map(field => `"${field}"`).join(',') + '\n';
+            });
+
+            // Toplam altın gramını ekle
+            csvContent += '\n'; // Boş satır
+            csvContent += '"TOPLAM ALTIN GRAMI",' + '"' + toplamAltinGram.toFixed(2) + ' gr",,,,\n';
+
+            // CSV dosyasını indir
+            const blob = new Blob(["\ufeff" + csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+
+            // Dosya adını oluştur
+            let fileName = `${toptanciAdi}_toptanci`;
+            
+            // Tarih aralığı seçilmişse, dosya adına ekle
+            if (baslangicTarihi && bitisTarihi) {
+                const baslangicFormatli = new Date(baslangicTarihi).toLocaleDateString('tr-TR').replace(/\./g, '');
+                const bitisFormatli = new Date(bitisTarihi).toLocaleDateString('tr-TR').replace(/\./g, '');
+                fileName += `_${baslangicFormatli}_${bitisFormatli}`;
+            }
+            fileName += '.csv';
+
+            link.setAttribute("href", url);
+            link.setAttribute("download", fileName);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function formatPara(deger) {
+            return deger.toLocaleString('tr-TR', { minimumFractionDigits: 2 }) + ' ₺';
+        }
+
+        // Resim işlemleri için fonksiyonlar
+        let selectedImages = new Set(); // Seçili resimleri tutmak için Set kullanıyoruz
+        let lastClickTime = 0;
+        const doubleClickDelay = 300;
+
+        function openImagesModal() {
+            document.getElementById('imagesModal').style.display = 'block';
+            loadImages();
+        }
+
+        function closeImagesModal() {
+            document.getElementById('imagesModal').style.display = 'none';
+            selectedImages.clear(); // Modal kapandığında seçimleri temizle
+        }
+
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const imageData = e.target.result;
+                saveImage(imageData);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function saveImage(imageData) {
+            let images = JSON.parse(localStorage.getItem(`images_${toptanciId}`)) || [];
+            images.push({
+                id: Date.now(),
+                data: imageData
+            });
+            localStorage.setItem(`images_${toptanciId}`, JSON.stringify(images));
+            loadImages();
+        }
+
+        function loadImages() {
+            const gallery = document.getElementById('gallery');
+            gallery.innerHTML = '';
+            
+            const images = JSON.parse(localStorage.getItem(`images_${toptanciId}`)) || [];
+
+            images.forEach((image, index) => {
+                const div = document.createElement('div');
+                div.className = 'gallery-item';
+                div.dataset.index = index;
+                
+                const img = document.createElement('img');
+                img.src = image.data;
+                img.alt = 'Toptancı resmi';
+                
+                div.appendChild(img);
+                
+                // Önceden seçili ise seçili olarak işaretle
+                if (selectedImages.has(index)) {
+                    div.classList.add('selected');
+                }
+                
+                div.onclick = function(e) {
+                    if (e.ctrlKey) {
+                        // CTRL + tık: Çoklu seçim
+                        const imageIndex = parseInt(div.dataset.index);
+                        if (selectedImages.has(imageIndex)) {
+                            selectedImages.delete(imageIndex);
+                            div.classList.remove('selected');
+                        } else {
+                            selectedImages.add(imageIndex);
+                            div.classList.add('selected');
+                        }
+                    } else {
+                        // Normal tık: Tam ekran görüntüleme
+                        showFullscreen(image.data);
+                    }
+                };
+                
+                gallery.appendChild(div);
+            });
+        }
+
+        function deleteSelectedImage() {
+            if (selectedImages.size === 0) {
+                alert('Lütfen silinecek resimleri seçin!');
+                return;
+            }
+
+            if (confirm('Seçili resimleri silmek istediğinizden emin misiniz?')) {
+                const images = JSON.parse(localStorage.getItem(`images_${toptanciId}`)) || [];
+                // Seçili indexleri diziye çevir ve büyükten küçüğe sırala
+                const selectedIndexes = Array.from(selectedImages).sort((a, b) => b - a);
+                
+                // Büyük indexten başlayarak sil (array sırasını bozmamak için)
+                selectedIndexes.forEach(index => {
+                    images.splice(index, 1);
+                });
+
+                localStorage.setItem(`images_${toptanciId}`, JSON.stringify(images));
+                selectedImages.clear(); // Seçimleri temizle
+                loadImages();
+            }
+        }
+
+        function showFullscreen(imageData) {
+            const modal = document.getElementById('fullscreenModal');
+            const img = document.getElementById('fullscreenImage');
+            img.src = imageData;
+            modal.style.display = 'block';
+        }
+
+        function closeFullscreen() {
+            document.getElementById('fullscreenModal').style.display = 'none';
+        }
+
+        // ESC tuşu ile modalları kapatma
+        window.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeImagesModal();
+                closeFullscreen();
+            }
+        });
+
+        // Input kontrolü için event listener'lar
+        document.getElementById('alinan').addEventListener('input', function() {
+            const odenenInput = document.getElementById('odenen');
+            if (this.value && this.value > 0) {
+                odenenInput.disabled = true;
+                odenenInput.value = '';
+            } else {
+                odenenInput.disabled = false;
+            }
+            hesaplaAltinGram();
+        });
+
+        document.getElementById('odenen').addEventListener('input', function() {
+            const alinanInput = document.getElementById('alinan');
+            if (this.value && this.value > 0) {
+                alinanInput.disabled = true;
+                alinanInput.value = '';
+            } else {
+                alinanInput.disabled = false;
+            }
+            hesaplaAltinGram();
+        });
+
+        function hesaplaAltinGram() {
+            const alinan = parseFloat(document.getElementById('alinan').value) || 0;
+            const odenen = parseFloat(document.getElementById('odenen').value) || 0;
+            const altinGramFiyati = parseFloat(document.getElementById('altinGramFiyati').value) || 0;
+
+            if (alinan > 0 && altinGramFiyati > 0) {
+                const alinanAltinGram = alinan / altinGramFiyati;
+                console.log(`Alınan altın gram: ${alinanAltinGram}`);
+            }
+
+            if (odenen > 0 && altinGramFiyati > 0) {
+                const odenenAltinGram = odenen / altinGramFiyati;
+                console.log(`Ödenen altın gram: ${odenenAltinGram}`);
+            }
+        }
+    </script>
+</body>
+</html>

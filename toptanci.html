@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Toptancı Takip Sayfası</title>
+    <link rel="stylesheet" href="toptanci.css">
+    <style>
+        /* Diğer stiller */
+        
+        .ozet-button {
+            background-color: yellow;
+            color: black;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-left: 10px;
+            transition: background-color 0.3s;
+        }
+
+        .ozet-button:hover {
+            background-color: yellow;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 5px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .ozet-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .ozet-table th,
+        .ozet-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .ozet-table th {
+            background-color: #f5f5f5;
+        }
+
+        .ozet-table tr:hover {
+            background-color: #f5f5f5;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <button onclick="window.location.href='index.html'" class="back-button">← Geri</button>
+        <h1>Toptancı Takip Sayfası</h1>
+    </div>
+
+    <div class="main-container">
+        <div class="search-section">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Toptancı ara..." class="search-input">
+                <button class="search-button" onclick="toptanciDetayGit()">Ara</button>
+                <button onclick="window.location.href='toptanci-yonetim.html'" class="manage-button" style="margin-left: 10px;">Toptancı Yönetimi</button>
+                <button onclick="window.location.href='toptanci-ozeti.html'" class="ozet-button" style="margin-left: 10px;">Toptancı Özeti</button>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Ad Soyad</th>
+                        <th>Firma Adı</th>
+                        <th>Telefon No</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Tablo içeriği JavaScript ile doldurulacak -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Toptancı Özeti Modal -->
+    <div id="toptanciOzetModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="toptanciOzetiniKapat()">&times;</span>
+            <h2>Toptancı Özeti</h2>
+            <table class="ozet-table">
+                <thead>
+                    <tr>
+                        <th>Toptancı Adı</th>
+                        <th>Toplam Alınan</th>
+                        <th>Toplam Ödenen</th>
+                        <th>Kalan Bakiye</th>
+                        <th>Toplam Bilezik Gramı</th>
+                        <th>Toplam Külçe Gramı</th>
+                    </tr>
+                </thead>
+                <tbody id="toptanciOzetTablosu"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="toptanci.js"></script>
+    <script>
+        // Sayfa yüklendiğinde tabloyu güncelle
+        document.addEventListener('DOMContentLoaded', () => {
+            tabloGuncelle();
+            // Input'a focus yap
+            document.getElementsByTagName('input')[0].focus();
+        });
+
+        // Ara butonuna tıklandığında detay sayfasına git
+        function toptanciDetayGit() {
+            const aramaMetni = document.getElementById('searchInput').value;
+            if (!aramaMetni) {
+                alert('Lütfen bir toptancı adı girin!');
+                return;
+            }
+
+            const toptancilar = toptancilariGetir();
+            const bulunanToptanci = toptancilar.find(t => 
+                t.adSoyad.toLowerCase().includes(aramaMetni.toLowerCase())
+            );
+
+            if (bulunanToptanci) {
+                window.location.href = `toptanci-detay.html?id=${bulunanToptanci.id}`;
+            } else {
+                alert('Toptancı bulunamadı!');
+            }
+        }
+
+        // Enter tuşuna basıldığında ara
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                toptanciDetayGit();
+            }
+        });
+
+        function toptanciAra(aramaMetni) {
+            const toptancilar = toptancilariGetir();
+            const filtrelenmisToptancilar = toptancilar.filter(t => 
+                t.adSoyad.toLowerCase().includes(aramaMetni.toLowerCase())
+            );
+
+            // Filtrelenmiş toptancıları ada göre sırala
+            filtrelenmisToptancilar.sort((a, b) => a.adSoyad.localeCompare(b.adSoyad, 'tr'));
+
+            const tbody = document.querySelector('tbody');
+            tbody.innerHTML = '';
+            
+            filtrelenmisToptancilar.forEach(toptanci => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${toptanci.adSoyad}</td>
+                    <td>${toptanci.firmaAdi}</td>
+                    <td>${toptanci.telefonNo}</td>
+                `;
+                
+                // Satıra tıklama olayı ekle
+                row.style.cursor = 'pointer';
+                row.onclick = () => {
+                    window.location.href = `toptanci-detay.html?id=${toptanci.id}`;
+                };
+                tbody.appendChild(row);
+            });
+        }
+
+        function tabloGuncelle() {
+            const toptancilar = toptancilariGetir();
+            
+            // Toptancıları ada göre sırala
+            toptancilar.sort((a, b) => a.adSoyad.localeCompare(b.adSoyad, 'tr'));
+
+            const tbody = document.querySelector('tbody');
+            tbody.innerHTML = '';
+            
+            toptancilar.forEach(toptanci => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${toptanci.adSoyad}</td>
+                    <td>${toptanci.firmaAdi}</td>
+                    <td>${toptanci.telefonNo}</td>
+                `;
+                
+                // Satıra tıklama olayı ekle
+                row.style.cursor = 'pointer';
+                row.onclick = () => {
+                    window.location.href = `toptanci-detay.html?id=${toptanci.id}`;
+                };
+                tbody.appendChild(row);
+            });
+        }
+
+        // Input değiştiğinde tabloyu güncelle
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            toptanciAra(e.target.value);
+        });
+
+        function toptanciOzetiniGoster() {
+            const modal = document.getElementById('toptanciOzetModal');
+            const tbody = document.getElementById('toptanciOzetTablosu');
+            tbody.innerHTML = '';
+
+            const toptancilar = JSON.parse(localStorage.getItem('toptancilar')) || [];
+            const islemler = JSON.parse(localStorage.getItem('toptanci_islemler')) || [];
+
+            toptancilar.forEach(toptanci => {
+                const toptanciIslemleri = islemler.filter(islem => islem.toptanciId === toptanci.id);
+                
+                let toplamAlinan = 0;
+                let toplamOdenen = 0;
+                let toplamBilezikGram = 0;
+                let toplamKulceGram = 0;
+
+                toptanciIslemleri.forEach(islem => {
+                    if (islem.alinan) toplamAlinan += parseFloat(islem.alinan);
+                    if (islem.odenen) toplamOdenen += parseFloat(islem.odenen);
+                    
+                    if (islem.altinTip === 'bilezik') {
+                        toplamBilezikGram += islem.tip === 'BORC' ? parseFloat(islem.gram || 0) : -parseFloat(islem.gram || 0);
+                    } else if (islem.altinTip === 'kulce') {
+                        toplamKulceGram += islem.tip === 'BORC' ? parseFloat(islem.gram || 0) : -parseFloat(islem.gram || 0);
+                    }
+                });
+
+                const kalanBakiye = toplamAlinan - toplamOdenen;
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${toptanci.ad}</td>
+                    <td>${toplamAlinan.toLocaleString('tr-TR')} ₺</td>
+                    <td>${toplamOdenen.toLocaleString('tr-TR')} ₺</td>
+                    <td>${kalanBakiye.toLocaleString('tr-TR')} ₺</td>
+                    <td>${toplamBilezikGram.toFixed(2)} gr</td>
+                    <td>${toplamKulceGram.toFixed(2)} gr</td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            modal.style.display = 'block';
+        }
+
+        function toptanciOzetiniKapat() {
+            const modal = document.getElementById('toptanciOzetModal');
+            modal.style.display = 'none';
+        }
+
+        // Modal dışına tıklandığında kapatma
+        window.onclick = function(event) {
+            const modal = document.getElementById('toptanciOzetModal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

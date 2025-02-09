@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Sipariş Detay Sayfası</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .back-button {
+            padding: 8px 15px;
+            margin-right: 20px;
+            border: none;
+            background-color: #f0f0f0;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .back-button:hover {
+            background-color: #e0e0e0;
+        }
+
+        h1 {
+            margin: 0;
+            color: #333;
+        }
+
+        .container {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .info-section, .order-section {
+            flex: 1;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .info-item {
+            margin-bottom: 15px;
+        }
+
+        .info-label {
+            font-weight: bold;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            color: #333;
+            font-size: 16px;
+        }
+
+        .order-section input, .order-section textarea {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .order-section label {
+            display: block;
+            margin-bottom: 5px;
+            color: #666;
+            font-weight: bold;
+        }
+
+        .save-button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+
+        .save-button:hover {
+            background-color: #45a049;
+        }
+
+        .table-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-top: 30px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f8f8f8;
+            font-weight: bold;
+            color: #666;
+        }
+
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        .export-button {
+            background-color: #2196F3;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        .export-button:hover {
+            background-color: #1976D2;
+        }
+
+        .rakam {
+            text-align: right;
+        }
+
+        .info-section input[type="date"] {
+            width: calc(50% - 5px);
+            padding: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .date-range {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .active {
+            background-color: #e3f2fd !important;
+        }
+
+        .durum-beklemede {
+            background-color: #fff9e6 !important; /* Daha açık sarı */
+        }
+        .durum-hazirlaniyor {
+            background-color: #e6f3ff !important; /* Daha açık mavi */
+        }
+        .durum-teslim-edildi {
+            background-color: #e6fff0 !important; /* Daha açık yeşil */
+        }
+        .durum-iptal {
+            background-color: #ffe6e6 !important; /* Daha açık kırmızı */
+        }
+
+        /* Seçili satır için özel renkler */
+        .durum-beklemede.active {
+            background-color: #fff3cd !important; /* Biraz daha koyu sarı */
+        }
+        .durum-hazirlaniyor.active {
+            background-color: #cfe2ff !important; /* Biraz daha koyu mavi */
+        }
+        .durum-teslim-edildi.active {
+            background-color: #d1e7dd !important; /* Biraz daha koyu yeşil */
+        }
+        .durum-iptal.active {
+            background-color: #f8d7da !important; /* Biraz daha koyu kırmızı */
+        }
+
+        /* Resim Galerisi Stilleri */
+        .images-button {
+            width: 100%;
+            padding: 10px;
+            background-color: #9C27B0;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        .images-button:hover {
+            background-color: #45a049;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 800px;
+            border-radius: 8px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            margin: 0;
+            color: #333;
+        }
+
+        .close {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #333;
+        }
+
+        .modal-buttons {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .add-image-btn, .delete-image-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .add-image-btn {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .delete-image-btn {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            padding: 15px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .gallery-item {
+            position: relative;
+            aspect-ratio: 1;
+            cursor: pointer;
+            border: 2px solid transparent;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            padding: 5px;
+            background-color: white;
+            transition: all 0.3s ease;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .gallery-item.selected {
+            border-color: #2196F3;
+            box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.3);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+
+        /* Fullscreen Image Modal */
+        .fullscreen-modal {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+            cursor: pointer;
+        }
+
+        .fullscreen-image {
+            max-width: 90%;
+            max-height: 90vh;
+            margin: auto;
+            display: block;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .delete-button {
+            background-color: #ff4444;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            min-width: 80px;
+        }
+
+        .delete-button:hover {
+            background-color: #cc0000;
+        }
+
+        td:last-child {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <button onclick="window.location.href='siparis.html'" class="back-button">← Geri</button>
+        <h1>Sipariş Detay Sayfası</h1>
+    </div>
+
+    <div class="container">
+        <div class="info-section">
+            <div class="info-item">
+                <div class="info-label">Ad Soyad</div>
+                <div id="adSoyadValue" class="info-value">-</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">T.C No</div>
+                <div id="tcNoValue" class="info-value">-</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Telefon No</div>
+                <div id="telefonNoValue" class="info-value">-</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Ölçüsü</div>
+                <div id="olcusuValue" class="info-value">-</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Adres</div>
+                <div id="adresValue" class="info-value">-</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Tarih Aralığı</div>
+                <div class="date-range">
+                    <input type="date" id="baslangicTarihi">
+                    <input type="date" id="bitisTarihi">
+                </div>
+            </div>
+            <button onclick="exportToExcel()" class="export-button">Excel'e Aktar</button>
+            <button class="images-button" onclick="openImagesModal()">Resimler</button>
+        </div>
+
+        <div class="order-section">
+            <label for="siparisDetay">Sipariş Detayı</label>
+            <textarea id="siparisDetay" rows="3" placeholder="Sipariş detayını girin"></textarea>
+            <label for="aciklama">Açıklama</label>
+            <textarea id="aciklama" rows="3" placeholder="Açıklama girin"></textarea>
+            <label for="bakiye">Bakiye</label>
+            <input type="text" id="bakiye" placeholder="Bakiye tutarını girin">
+
+            <label for="durum">Durum</label>
+            <select id="durum" style="width: 100%; padding: 8px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 4px; font-size: 16px;">
+                <option value="Beklemede">Beklemede</option>
+                <option value="Hazırlanıyor">Hazırlanıyor</option>
+                <option value="Teslim Edildi">Teslim Edildi</option>
+                <option value="İptal">İptal</option>
+            </select>
+
+            <button onclick="siparisKaydet()" class="save-button">Sipariş Kaydet</button>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Tarih</th>
+                    <th>Ad Soyad</th>
+                    <th>T.C No</th>
+                    <th>Telefon No</th>
+                    <th>Ölçüsü</th>
+                    <th>Sipariş ID</th>
+                    <th>Sipariş Detayı</th>
+                    <th>Açıklama</th>
+                    <th>Bakiye</th>
+                    <th>Durum</th>
+                    <th>İşlemler</th>
+                </tr>
+            </thead>
+            <tbody id="siparisTablosu">
+                <!-- JavaScript ile doldurulacak -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Resim Galerisi Modal -->
+    <div id="imagesModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Resim Galerisi</h2>
+                <span class="close" onclick="closeImagesModal()">&times;</span>
+            </div>
+            <div class="modal-buttons">
+                <input type="file" id="imageInput" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
+                <button class="add-image-btn" onclick="document.getElementById('imageInput').click()">Resim Ekle</button>
+                <button class="delete-image-btn" onclick="deleteSelectedImage()">Resim Sil</button>
+            </div>
+            <div id="gallery" class="gallery">
+                <!-- Resimler JavaScript ile eklenecek -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Tam Ekran Resim Modal -->
+    <div id="fullscreenModal" class="fullscreen-modal" onclick="closeFullscreen()">
+        <img id="fullscreenImage" class="fullscreen-image" src="" alt="Tam ekran resim">
+    </div>
+
+    <script src="siparis.js"></script>
+    <script>
+        let currentMusteri = null;
+        let nextSiparisId = 1;
+        let selectedSiparis = null; // Seçili siparişi tutmak için
+        let selectedImages = new Set();
+        let lastClickTime = 0;
+        const doubleClickDelay = 300;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const musteriId = urlParams.get('id');
+
+            if (!musteriId) {
+                alert('Müşteri bilgisi bulunamadı!');
+                window.location.href = 'siparis.html';
+                return;
+            }
+
+            const musteriler = SiparisMusteri.musterileriGetir();
+            currentMusteri = musteriler.find(m => m.id === musteriId);
+
+            if (!currentMusteri) {
+                alert('Müşteri bulunamadı!');
+                window.location.href = 'siparis.html';
+                return;
+            }
+
+            // Müşteri bilgilerini göster
+            document.getElementById('adSoyadValue').textContent = currentMusteri.adSoyad;
+            document.getElementById('tcNoValue').textContent = currentMusteri.tcNo;
+            document.getElementById('telefonNoValue').textContent = currentMusteri.telefonNo;
+            document.getElementById('olcusuValue').textContent = currentMusteri.olcusu || '-';
+            document.getElementById('adresValue').textContent = currentMusteri.adres || '-';
+
+            // Mevcut en yüksek sipariş ID'sini bul
+            const siparisler = JSON.parse(localStorage.getItem('siparisler')) || [];
+            if (siparisler.length > 0) {
+                const ids = siparisler.map(s => parseInt(s.siparisId || "0")).filter(id => !isNaN(id));
+                if (ids.length > 0) {
+                    nextSiparisId = Math.max(...ids) + 1;
+                }
+            }
+
+            // Siparişleri yükle
+            siparisleriGuncelle();
+
+            // Input'a sayısal değer kontrolü ekle
+            document.getElementById('bakiye').addEventListener('input', function(e) {
+                this.value = this.value.replace(/[^0-9.,]/g, '');
+            });
+
+            // Kaydet butonunun metnini güncelle
+            updateKaydetButtonText();
+        });
+
+        // Kaydet butonunun metnini güncelle
+        function updateKaydetButtonText() {
+            const kaydetBtn = document.querySelector('.save-button');
+            kaydetBtn.textContent = selectedSiparis ? 'Siparişi Güncelle' : 'Sipariş Kaydet';
+        }
+
+        // Form alanlarını temizle
+        function clearForm() {
+            document.getElementById('siparisDetay').value = '';
+            document.getElementById('aciklama').value = '';
+            document.getElementById('bakiye').value = '';
+            document.getElementById('durum').value = 'Beklemede';
+            selectedSiparis = null;
+            updateKaydetButtonText();
+        }
+
+        // Form alanlarını doldur
+        function fillForm(siparis) {
+            document.getElementById('siparisDetay').value = siparis.detay;
+            document.getElementById('aciklama').value = siparis.aciklama;
+            document.getElementById('bakiye').value = siparis.bakiye.toString();
+            document.getElementById('durum').value = siparis.durum;
+            selectedSiparis = siparis;
+            updateKaydetButtonText();
+        }
+
+        function siparisKaydet() {
+            const siparisDetay = document.getElementById('siparisDetay').value;
+            const aciklama = document.getElementById('aciklama').value;
+            const bakiye = document.getElementById('bakiye').value.replace(',', '.');
+            const durum = document.getElementById('durum').value;
+
+            if (!siparisDetay || !bakiye) {
+                alert('Lütfen sipariş detayı ve bakiye girin!');
+                return;
+            }
+
+            const siparisler = JSON.parse(localStorage.getItem('siparisler')) || [];
+
+            if (selectedSiparis) {
+                // Yeni kayıt olarak ekle
+                const yeniSiparis = {
+                    id: Date.now().toString(),
+                    siparisId: selectedSiparis.siparisId,
+                    musteriId: currentMusteri.id,
+                    tarih: new Date().toISOString(),
+                    detay: siparisDetay,
+                    aciklama: aciklama,
+                    bakiye: parseFloat(bakiye),
+                    durum: durum
+                };
+                siparisler.push(yeniSiparis);
+            } else {
+                // Tamamen yeni sipariş ekle
+                const yeniSiparis = {
+                    id: Date.now().toString(),
+                    siparisId: nextSiparisId,
+                    musteriId: currentMusteri.id,
+                    tarih: new Date().toISOString(),
+                    detay: siparisDetay,
+                    aciklama: aciklama,
+                    bakiye: parseFloat(bakiye),
+                    durum: durum
+                };
+                siparisler.push(yeniSiparis);
+                nextSiparisId++;
+            }
+
+            localStorage.setItem('siparisler', JSON.stringify(siparisler));
+            clearForm();
+            siparisleriGuncelle();
+            alert('Sipariş kaydedildi!');
+        }
+
+        function siparisleriGuncelle() {
+            const siparisler = JSON.parse(localStorage.getItem('siparisler')) || [];
+            const tbody = document.getElementById('siparisTablosu');
+            tbody.innerHTML = '';
+
+            // Siparişleri tarihe göre sırala (en yeni en üstte)
+            siparisler
+                .filter(siparis => siparis.musteriId === currentMusteri.id)
+                .sort((a, b) => new Date(b.tarih) - new Date(a.tarih))
+                .forEach(siparis => {
+                    const row = document.createElement('tr');
+                    row.style.cursor = 'pointer';
+
+                    // Durum sınıfını belirle
+                    const durumClass = siparis.durum === 'Beklemede' ? 'durum-beklemede' :
+                                     siparis.durum === 'Hazırlanıyor' ? 'durum-hazirlaniyor' :
+                                     siparis.durum === 'Teslim Edildi' ? 'durum-teslim-edildi' :
+                                     siparis.durum === 'İptal' ? 'durum-iptal' : '';
+                    
+                    if (durumClass) {
+                        row.classList.add(durumClass);
+                    }
+
+                    row.innerHTML = `
+                        <td>${formatTarihSaat(new Date(siparis.tarih))}</td>
+                        <td>${currentMusteri.adSoyad}</td>
+                        <td>${currentMusteri.tcNo}</td>
+                        <td>${currentMusteri.telefonNo}</td>
+                        <td>${currentMusteri.olcusu || '-'}</td>
+                        <td>${siparis.siparisId || '-'}</td>
+                        <td>${siparis.detay || '-'}</td>
+                        <td>${siparis.aciklama || '-'}</td>
+                        <td class="rakam">${siparis.bakiye.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' })}</td>
+                        <td>${siparis.durum}</td>
+                        <td>
+                            <button onclick="siparisSil('${siparis.tarih}')" class="delete-button">Sil</button>
+                        </td>
+                    `;
+
+                    // Satıra tıklama olayı ekle
+                    row.addEventListener('click', function(e) {
+                        // Eğer tıklanan sil butonu ise, satır seçme işlemini yapma
+                        if (e.target.tagName === 'BUTTON') return;
+                        
+                        // Diğer satırların seçimini kaldır
+                        tbody.querySelectorAll('tr').forEach(r => r.classList.remove('selected'));
+                        // Bu satırı seç
+                        row.classList.add('selected');
+                        
+                        siparisSecimi(siparis);
+                    });
+
+                    tbody.appendChild(row);
+                });
+        }
+
+        function siparisSecimi(siparis) {
+            // Seçili siparişi güncelle
+            selectedSiparis = siparis;
+            
+            // Form alanlarını doldur
+            document.getElementById('aciklama').value = siparis.aciklama || '';
+            document.getElementById('bakiye').value = siparis.bakiye;
+            document.getElementById('durum').value = siparis.durum;
+            document.getElementById('siparisDetay').value = siparis.detay || '';
+            
+            // Kaydet butonunu güncelle olarak değiştir
+            document.querySelector('.save-button').textContent = 'Güncelle';
+        }
+
+        function guncelle() {
+            if (!selectedSiparis) {
+                alert('Lütfen güncellenecek siparişi seçin!');
+                return;
+            }
+
+            const aciklama = document.getElementById('aciklama').value;
+            const bakiye = parseFloat(document.getElementById('bakiye').value);
+            const durum = document.getElementById('durum').value;
+            const siparisDetay = document.getElementById('siparisDetay').value;
+
+            if (!aciklama || !bakiye || !durum || !siparisDetay) {
+                alert('Lütfen tüm alanları doldurun!');
+                return;
+            }
+
+            let siparisler = JSON.parse(localStorage.getItem('siparisler')) || [];
+            const index = siparisler.findIndex(s => s.tarih === selectedSiparis.tarih);
+
+            if (index !== -1) {
+                // Mevcut değerleri koru, sadece değiştirilen alanları güncelle
+                siparisler[index] = {
+                    ...selectedSiparis,
+                    aciklama: aciklama,
+                    bakiye: bakiye,
+                    durum: durum,
+                    detay: siparisDetay
+                };
+
+                localStorage.setItem('siparisler', JSON.stringify(siparisler));
+                
+                // Formu temizle ve tabloyu güncelle
+                document.getElementById('aciklama').value = '';
+                document.getElementById('bakiye').value = '';
+                document.getElementById('durum').value = 'Beklemede';
+                document.getElementById('siparisDetay').value = '';
+                
+                // Seçili siparişi sıfırla
+                selectedSiparis = null;
+                
+                // Kaydet butonunu normal haline getir
+                document.querySelector('.save-button').textContent = 'Sipariş Kaydet';
+                
+                siparisleriGuncelle();
+                alert('Sipariş başarıyla güncellendi!');
+            }
+        }
+
+        function siparisSil(tarih) {
+            if (confirm('Bu siparişi silmek istediğinize emin misiniz?')) {
+                let siparisler = JSON.parse(localStorage.getItem('siparisler')) || [];
+                siparisler = siparisler.filter(siparis => siparis.tarih !== tarih);
+                localStorage.setItem('siparisler', JSON.stringify(siparisler));
+                
+                // Input alanlarını temizle
+                document.getElementById('aciklama').value = '';
+                document.getElementById('bakiye').value = '';
+                document.getElementById('durum').value = 'Beklemede';
+                document.getElementById('siparisDetay').value = '';
+                
+                // Seçili sipariş bilgisini sıfırla
+                selectedSiparis = null;
+                
+                // Tabloyu güncelle
+                siparisleriGuncelle();
+                
+                // Düzenleme modunu kapat
+                document.querySelector('.save-button').textContent = 'Sipariş Kaydet';
+            }
+        }
+
+        function exportToExcel() {
+            if (!currentMusteri) {
+                alert('Müşteri bilgisi bulunamadı!');
+                return;
+            }
+
+            // Tarih aralığını al
+            const baslangicTarihi = document.getElementById('baslangicTarihi').value;
+            const bitisTarihi = document.getElementById('bitisTarihi').value;
+
+            // Müşterinin tüm siparişlerini al
+            let musteriSiparisleri = JSON.parse(localStorage.getItem('siparisler')) || [];
+
+            // Sadece bu müşterinin siparişlerini filtrele
+            musteriSiparisleri = musteriSiparisleri.filter(siparis => siparis.musteriId === currentMusteri.id);
+
+            // Tarih filtresini uygula
+            if (baslangicTarihi && bitisTarihi) {
+                musteriSiparisleri = musteriSiparisleri.filter(siparis => {
+                    const siparisTarihi = new Date(siparis.tarih);
+                    return siparisTarihi >= new Date(baslangicTarihi) && 
+                           siparisTarihi <= new Date(bitisTarihi + 'T23:59:59');
+                });
+            }
+
+            // Siparişleri tarihe göre sırala (yeniden eskiye)
+            musteriSiparisleri.sort((a, b) => new Date(b.tarih) - new Date(a.tarih));
+
+            // CSV başlıkları
+            let csvContent = "Tarih,Ad Soyad,T.C No,Telefon No,Ölçüsü,Sipariş ID,Sipariş Detayı,Açıklama,Bakiye,Durum\n";
+
+            // Verileri CSV formatına dönüştür
+            musteriSiparisleri.forEach(siparis => {
+                const tarih = new Date(siparis.tarih);
+                csvContent += [
+                    `${tarih.toLocaleDateString()} ${tarih.toLocaleTimeString()}`,
+                    currentMusteri.adSoyad,
+                    currentMusteri.tcNo,
+                    currentMusteri.telefonNo,
+                    currentMusteri.olcusu || '-',
+                    siparis.siparisId || '-',
+                    siparis.detay || '-',
+                    siparis.aciklama || '-',
+                    siparis.bakiye.toLocaleString('tr-TR', { minimumFractionDigits: 2 }),
+                    siparis.durum
+                ].map(field => `"${field}"`).join(',') + '\n';
+            });
+
+            // CSV dosyasını indir
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+
+            // Dosya adını oluştur
+            let fileName = `${currentMusteri.adSoyad}_siparisler`;
+            
+            // Tarih aralığı seçilmişse, dosya adına ekle
+            if (baslangicTarihi && bitisTarihi) {
+                const baslangicFormatli = new Date(baslangicTarihi).toLocaleDateString('tr-TR').replace(/\./g, '');
+                const bitisFormatli = new Date(bitisTarihi).toLocaleDateString('tr-TR').replace(/\./g, '');
+                fileName += `_${baslangicFormatli}_${bitisFormatli}`;
+            }
+            fileName += '.csv';
+
+            link.setAttribute("href", url);
+            link.setAttribute("download", fileName);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function openImagesModal() {
+            document.getElementById('imagesModal').style.display = 'block';
+            loadImages();
+        }
+
+        function closeImagesModal() {
+            document.getElementById('imagesModal').style.display = 'none';
+        }
+
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    saveImage(e.target.result);
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function saveImage(imageData) {
+            const images = JSON.parse(localStorage.getItem(`siparis_${currentMusteri.id}_images`) || '[]');
+            images.push({ id: Date.now(), data: imageData });
+            localStorage.setItem(`siparis_${currentMusteri.id}_images`, JSON.stringify(images));
+            loadImages();
+        }
+
+        function loadImages() {
+            const gallery = document.getElementById('gallery');
+            gallery.innerHTML = '';
+            
+            const images = JSON.parse(localStorage.getItem(`siparis_${currentMusteri.id}_images`) || '[]');
+            
+            images.forEach(image => {
+                const div = document.createElement('div');
+                div.className = 'gallery-item';
+                if (selectedImages.has(image.id)) {
+                    div.classList.add('selected');
+                }
+                
+                const img = document.createElement('img');
+                img.src = image.data;
+                img.alt = 'Müşteri resmi';
+                
+                div.appendChild(img);
+                
+                div.onclick = function(e) {
+                    const currentTime = new Date().getTime();
+                    if (currentTime - lastClickTime < doubleClickDelay) {
+                        // Çift tıklama - tam ekran göster
+                        showFullscreen(image.data);
+                    } else {
+                        // Tek tıklama - seçim
+                        if (selectedImages.has(image.id)) {
+                            selectedImages.delete(image.id);
+                            div.classList.remove('selected');
+                        } else {
+                            selectedImages.add(image.id);
+                            div.classList.add('selected');
+                        }
+                    }
+                    lastClickTime = currentTime;
+                };
+                
+                gallery.appendChild(div);
+            });
+        }
+
+        function deleteSelectedImage() {
+            if (selectedImages.size === 0) {
+                alert('Lütfen silmek istediğiniz resimleri seçin!');
+                return;
+            }
+
+            if (confirm('Seçili resimleri silmek istediğinize emin misiniz?')) {
+                const images = JSON.parse(localStorage.getItem(`siparis_${currentMusteri.id}_images`) || '[]');
+                const filteredImages = images.filter(img => !selectedImages.has(img.id));
+                localStorage.setItem(`siparis_${currentMusteri.id}_images`, JSON.stringify(filteredImages));
+                selectedImages.clear();
+                loadImages();
+            }
+        }
+
+        function showFullscreen(imageData) {
+            const modal = document.getElementById('fullscreenModal');
+            const img = document.getElementById('fullscreenImage');
+            img.src = imageData;
+            modal.style.display = 'block';
+        }
+
+        function closeFullscreen() {
+            document.getElementById('fullscreenModal').style.display = 'none';
+        }
+
+        // ESC tuşu ile modalları kapatma
+        window.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeImagesModal();
+                closeFullscreen();
+            }
+        });
+
+        function formatTarihSaat(tarih) {
+            return `${tarih.toLocaleDateString('tr-TR')} ${tarih.toLocaleTimeString('tr-TR')}`;
+        }
+    </script>
+</body>
+</html>

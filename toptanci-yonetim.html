@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Toptancı Yönetimi Sayfası</title>
+    <link rel="stylesheet" href="toptanci.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            background-image: url('topyonback.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+
+        .form-container {
+            width: 80%;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: rgba(249, 249, 249, 0.9);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            pointer-events: auto !important;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            pointer-events: auto !important;
+        }
+
+        .button-group {
+            margin-top: 20px;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .button-group button {
+            pointer-events: auto !important;
+        }
+
+        .save-button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-button {
+            background-color: #f44336;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .update-button {
+            background-color: #ffc107;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .save-button:hover {
+            background-color: #45a049;
+        }
+
+        .delete-button:hover {
+            background-color: #da190b;
+        }
+
+        .update-button:hover {
+            background-color: #ffc107;
+        }
+
+        h1 {
+            color: white;
+        }
+
+        /* Pop-up Stilleri */
+        .popup {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .popup-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 5px;
+            position: relative;
+        }
+
+        .popup h3 {
+            margin-top: 0;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #666;
+            font-weight: bold;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        .form-group input:focus {
+            border-color: #4CAF50;
+            outline: none;
+        }
+
+        .popup-buttons {
+            text-align: right;
+            margin-top: 20px;
+        }
+
+        .popup-buttons button {
+            padding: 8px 15px;
+            margin-left: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .popup-update {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .popup-update:hover {
+            background-color: #45a049;
+        }
+
+        .popup-cancel {
+            background-color: #9e9e9e;
+            color: white;
+        }
+
+        .popup-cancel:hover {
+            background-color: #9e9e9e;
+        }
+
+        .popup input[readonly] {
+            background-color: #f5f5f5;
+            cursor: not-allowed;
+        }
+
+        .info-text {
+            padding: 8px;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            color: #333;
+            font-size: 14px;
+            min-height: 20px;
+        }
+
+        .info-group {
+            margin-bottom: 15px;
+        }
+
+        .info-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #666;
+            font-weight: bold;
+        }
+
+        .info-text {
+            display: block;
+            padding: 8px;
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            color: #333;
+        }
+
+        .popup-delete {
+            background-color: #f44336;
+            color: white;
+            padding: 8px 15px;
+            margin-left: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .popup-delete:hover {
+            background-color: #da190b;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <button onclick="window.location.href='toptanci.html'" class="back-button">← Geri</button>
+        <h1>Toptancı Yönetimi</h1>
+    </div>
+
+    <div class="form-container">
+        <div class="form-group">
+            <label for="adSoyad">Ad Soyad</label>
+            <input type="text" id="adSoyad" placeholder="Ad Soyad giriniz">
+        </div>
+        <div class="form-group">
+            <label for="firmaAdi">Firma Adı</label>
+            <input type="text" id="firmaAdi" placeholder="Firma adını giriniz">
+        </div>
+        <div class="form-group">
+            <label for="telefon">Telefon No</label>
+            <input type="tel" id="telefon" placeholder="Telefon numarası giriniz">
+        </div>
+        <div class="button-group">
+            <button onclick="toptanciEkle()" class="save-button">Toptancı Ekle</button>
+            <button onclick="openUpdatePopup()" class="update-button">Toptancı Güncelle</button>
+            <button onclick="openDeletePopup()" class="delete-button">Toptancı Sil</button>
+        </div>
+    </div>
+
+    <!-- Güncelleme Pop-up -->
+    <div id="updatePopup" class="popup">
+        <div class="popup-content">
+            <h3>Toptancı Güncelleme</h3>
+            <div class="form-group">
+                <label for="updateSearchInput">Arama:</label>
+                <input type="text" id="updateSearchInput" placeholder="Ad Soyad veya Firma Adı ile ara...">
+            </div>
+            <div id="updateForm" style="display: none;">
+                <div class="form-group">
+                    <label for="updateAdSoyad">Ad Soyad:</label>
+                    <input type="text" id="updateAdSoyad" placeholder="Ad Soyad girin">
+                </div>
+                <div class="form-group">
+                    <label for="updateFirmaAdi">Firma Adı:</label>
+                    <input type="text" id="updateFirmaAdi" placeholder="Firma adı girin">
+                </div>
+                <div class="form-group">
+                    <label for="updateTelefon">Telefon No:</label>
+                    <input type="tel" id="updateTelefon" placeholder="Telefon No girin">
+                </div>
+            </div>
+            <div class="popup-buttons">
+                <button onclick="searchUpdateToptanci()" id="updateSearchBtn" class="popup-update">Toptancı Ara</button>
+                <button onclick="updateToptanci()" id="updateSaveBtn" class="popup-update" style="display: none;">Güncelle</button>
+                <button onclick="closeUpdatePopup()" class="popup-cancel">İptal</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Silme Pop-up -->
+    <div id="deletePopup" class="popup">
+        <div class="popup-content">
+            <h3>Toptancı Silme</h3>
+            <div class="form-group">
+                <label for="deleteSearchInput">Arama:</label>
+                <input type="text" id="deleteSearchInput" placeholder="Ad Soyad veya Firma Adı ile ara...">
+            </div>
+            <div id="deleteForm" style="display: none;">
+                <div class="info-group">
+                    <label>Ad Soyad:</label>
+                    <span id="deleteAdSoyad" class="info-text"></span>
+                </div>
+                <div class="info-group">
+                    <label>Firma Adı:</label>
+                    <span id="deleteFirmaAdi" class="info-text"></span>
+                </div>
+                <div class="info-group">
+                    <label>Telefon No:</label>
+                    <span id="deleteTelefon" class="info-text"></span>
+                </div>
+            </div>
+            <div class="popup-buttons">
+                <button onclick="searchDeleteToptanci()" id="deleteSearchBtn" class="popup-update">Toptancı Ara</button>
+                <button onclick="deleteToptanci()" id="deleteSaveBtn" class="popup-delete" style="display: none;">Sil</button>
+                <button onclick="closeDeletePopup()" class="popup-cancel">İptal</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="toptanci.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('adSoyad').focus();
+        });
+
+        function openUpdatePopup() {
+            document.getElementById('updatePopup').style.display = 'block';
+            document.getElementById('updateSearchInput').focus();
+        }
+
+        function closeUpdatePopup() {
+            document.getElementById('updatePopup').style.display = 'none';
+            // Formu temizle
+            document.getElementById('updateSearchInput').value = '';
+            document.getElementById('updateAdSoyad').value = '';
+            document.getElementById('updateFirmaAdi').value = '';
+            document.getElementById('updateTelefon').value = '';
+            // Formu ve butonları sıfırla
+            document.getElementById('updateForm').style.display = 'none';
+            document.getElementById('updateSearchBtn').style.display = 'block';
+            document.getElementById('updateSaveBtn').style.display = 'none';
+        }
+
+        function openDeletePopup() {
+            document.getElementById('deletePopup').style.display = 'block';
+            document.getElementById('deleteSearchInput').focus();
+        }
+
+        function closeDeletePopup() {
+            document.getElementById('deletePopup').style.display = 'none';
+            // Formu temizle
+            document.getElementById('deleteSearchInput').value = '';
+            document.getElementById('deleteSearchInput').readOnly = false;
+            // Formu ve butonları sıfırla
+            document.getElementById('deleteForm').style.display = 'none';
+            document.getElementById('deleteSearchBtn').style.display = 'block';
+            document.getElementById('deleteSaveBtn').style.display = 'none';
+        }
+
+        function searchUpdateToptanci() {
+            const searchText = document.getElementById('updateSearchInput').value.toLowerCase();
+            if (!searchText) {
+                alert('Lütfen arama metni girin!');
+                return;
+            }
+
+            const toptancilar = JSON.parse(localStorage.getItem('toptancilar')) || [];
+            const toptanci = toptancilar.find(t => 
+                t.adSoyad.toLowerCase().includes(searchText) || 
+                t.firmaAdi.toLowerCase().includes(searchText)
+            );
+
+            if (!toptanci) {
+                alert('Toptancı bulunamadı!');
+                return;
+            }
+
+            // Form alanlarını doldur
+            document.getElementById('updateAdSoyad').value = toptanci.adSoyad || '';
+            document.getElementById('updateFirmaAdi').value = toptanci.firmaAdi || '';
+            document.getElementById('updateTelefon').value = toptanci.telefonNo || '';
+
+            // Orijinal firma adını sakla
+            document.getElementById('updateFirmaAdi').dataset.originalFirmaAdi = toptanci.firmaAdi;
+
+            // Güncelleme formunu ve butonunu göster
+            document.getElementById('updateForm').style.display = 'block';
+            document.getElementById('updateSearchBtn').style.display = 'none';
+            document.getElementById('updateSaveBtn').style.display = 'block';
+        }
+
+        function updateToptanci() {
+            const newFirmaAdi = document.getElementById('updateFirmaAdi').value;
+            const originalFirmaAdi = document.getElementById('updateFirmaAdi').dataset.originalFirmaAdi;
+            const adSoyad = document.getElementById('updateAdSoyad').value;
+            const telefon = document.getElementById('updateTelefon').value.replace(/\D/g, ''); // Sadece rakamları al
+
+            if (!newFirmaAdi || !adSoyad || !telefon) {
+                alert('Lütfen tüm alanları doldurun!');
+                return;
+            }
+
+            const toptancilar = JSON.parse(localStorage.getItem('toptancilar')) || [];
+
+            // Eğer firma adı değiştiyse ve yeni firma adı zaten varsa
+            if (newFirmaAdi !== originalFirmaAdi && 
+                toptancilar.some(t => t.firmaAdi.toLowerCase() === newFirmaAdi.toLowerCase())) {
+                alert('Bu firma adı zaten kullanılıyor!');
+                return;
+            }
+
+            const toptanciIndex = toptancilar.findIndex(t => t.firmaAdi === originalFirmaAdi);
+
+            if (toptanciIndex === -1) {
+                alert('Toptancı bulunamadı!');
+                return;
+            }
+
+            // Toptancıyı güncelle
+            toptancilar[toptanciIndex] = {
+                ...toptancilar[toptanciIndex],
+                firmaAdi: newFirmaAdi,
+                adSoyad,
+                telefonNo: formatPhoneNumber(telefon)
+            };
+
+            localStorage.setItem('toptancilar', JSON.stringify(toptancilar));
+            alert('Toptancı başarıyla güncellendi!');
+            closeUpdatePopup();
+            tabloGuncelle();
+        }
+
+        function searchDeleteToptanci() {
+            const searchText = document.getElementById('deleteSearchInput').value.toLowerCase();
+            if (!searchText) {
+                alert('Lütfen arama metni girin!');
+                return;
+            }
+
+            const toptancilar = JSON.parse(localStorage.getItem('toptancilar')) || [];
+            const toptanci = toptancilar.find(t => 
+                t.adSoyad.toLowerCase().includes(searchText) || 
+                t.firmaAdi.toLowerCase().includes(searchText)
+            );
+
+            if (!toptanci) {
+                alert('Toptancı bulunamadı!');
+                return;
+            }
+
+            // Bilgileri göster
+            document.getElementById('deleteAdSoyad').textContent = toptanci.adSoyad || '';
+            document.getElementById('deleteFirmaAdi').textContent = toptanci.firmaAdi || '';
+            document.getElementById('deleteTelefon').textContent = toptanci.telefonNo || '';
+
+            // Silme formunu ve butonunu göster
+            document.getElementById('deleteForm').style.display = 'block';
+            document.getElementById('deleteSearchBtn').style.display = 'none';
+            document.getElementById('deleteSaveBtn').style.display = 'inline-block';
+            
+            // Arama alanını readonly yap
+            document.getElementById('deleteSearchInput').readOnly = true;
+        }
+
+        function deleteToptanci() {
+            const searchText = document.getElementById('deleteSearchInput').value.toLowerCase();
+            const toptancilar = JSON.parse(localStorage.getItem('toptancilar')) || [];
+            const toptanci = toptancilar.find(t => 
+                t.adSoyad.toLowerCase().includes(searchText) || 
+                t.firmaAdi.toLowerCase().includes(searchText)
+            );
+
+            if (!toptanci) {
+                alert('Toptancı bulunamadı!');
+                return;
+            }
+
+            if (confirm('Bu toptancıyı silmek istediğinizden emin misiniz?')) {
+                const updatedToptancilar = toptancilar.filter(t => t.id !== toptanci.id);
+                localStorage.setItem('toptancilar', JSON.stringify(updatedToptancilar));
+                alert('Toptancı başarıyla silindi!');
+                closeDeletePopup();
+                tabloGuncelle();
+            }
+        }
+
+        function toptanciEkle() {
+            const adSoyad = document.getElementById('adSoyad').value;
+            const firmaAdi = document.getElementById('firmaAdi').value;
+            const telefon = document.getElementById('telefon').value.replace(/\D/g, ''); // Sadece rakamları al
+
+            if (!adSoyad || !firmaAdi || !telefon) {
+                alert('Lütfen tüm alanları doldurun!');
+                return;
+            }
+
+            const toptancilar = JSON.parse(localStorage.getItem('toptancilar')) || [];
+            
+            if (toptancilar.some(t => t.firmaAdi === firmaAdi)) {
+                alert('Bu firma adı ile kayıtlı toptancı zaten var!');
+                return;
+            }
+
+            const yeniToptanci = {
+                id: Date.now().toString(),
+                adSoyad,
+                firmaAdi,
+                telefonNo: formatPhoneNumber(telefon) // telefonNo olarak kaydet
+            };
+
+            toptancilar.push(yeniToptanci);
+            localStorage.setItem('toptancilar', JSON.stringify(toptancilar));
+            alert('Toptancı başarıyla eklendi!');
+            
+            // Formu temizle
+            document.getElementById('adSoyad').value = '';
+            document.getElementById('firmaAdi').value = '';
+            document.getElementById('telefon').value = '';
+            document.getElementById('adSoyad').focus();
+        }
+
+        // Telefon numarası formatı fonksiyonu
+        function formatPhoneNumber(phoneNumber) {
+            if (!phoneNumber) return '';
+            
+            // Sadece rakamları al
+            const numbers = phoneNumber.replace(/\D/g, '');
+            
+            // Eğer 10 rakam varsa formatla
+            if (numbers.length === 10) {
+                return numbers.slice(0, 3) + ' ' + numbers.slice(3, 6) + ' ' + numbers.slice(6);
+            }
+            
+            return phoneNumber; // Format uygulanamıyorsa olduğu gibi döndür
+        }
+
+        // Telefon numarası formatı - Ana form
+        document.getElementById('telefon').addEventListener('input', function(e) {
+            let value = e.target.value;
+            let cursorPosition = e.target.selectionStart;
+            let previousLength = value.length;
+
+            // Sadece rakamları al
+            value = value.replace(/\D/g, '');
+            if (value.length > 10) value = value.slice(0, 10);
+
+            // Formatı uygula
+            let formattedValue = '';
+            if (value.length > 0) {
+                formattedValue = value.slice(0, 3);
+                if (value.length > 3) {
+                    formattedValue += ' ' + value.slice(3, 6);
+                }
+                if (value.length > 6) {
+                    formattedValue += ' ' + value.slice(6);
+                }
+            }
+
+            e.target.value = formattedValue;
+
+            // İmleç pozisyonunu ayarla
+            if (cursorPosition < previousLength) {
+                let newPosition = cursorPosition;
+                if (previousLength > formattedValue.length) {
+                    newPosition = Math.max(0, formattedValue.length);
+                }
+                e.target.setSelectionRange(newPosition, newPosition);
+            }
+        });
+
+        // Telefon numarası formatı - Güncelleme formu
+        document.getElementById('updateTelefon').addEventListener('input', function(e) {
+            let value = e.target.value;
+            let cursorPosition = e.target.selectionStart;
+            let previousLength = value.length;
+
+            // Sadece rakamları al
+            value = value.replace(/\D/g, '');
+            if (value.length > 10) value = value.slice(0, 10);
+
+            // Formatı uygula
+            let formattedValue = '';
+            if (value.length > 0) {
+                formattedValue = value.slice(0, 3);
+                if (value.length > 3) {
+                    formattedValue += ' ' + value.slice(3, 6);
+                }
+                if (value.length > 6) {
+                    formattedValue += ' ' + value.slice(6);
+                }
+            }
+
+            e.target.value = formattedValue;
+
+            // İmleç pozisyonunu ayarla
+            if (cursorPosition < previousLength) {
+                let newPosition = cursorPosition;
+                if (previousLength > formattedValue.length) {
+                    newPosition = Math.max(0, formattedValue.length);
+                }
+                e.target.setSelectionRange(newPosition, newPosition);
+            }
+        });
+
+        // Enter tuşu ile arama yapma
+        document.getElementById('updateSearchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchUpdateToptanci();
+            }
+        });
+
+        // Enter tuşu ile arama yapma
+        document.getElementById('deleteSearchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchDeleteToptanci();
+            }
+        });
+
+        // Pop-up dışına tıklandığında kapatma
+        window.onclick = function(event) {
+            const updatePopup = document.getElementById('updatePopup');
+            const deletePopup = document.getElementById('deletePopup');
+            if (event.target === updatePopup) {
+                closeUpdatePopup();
+            }
+            if (event.target === deletePopup) {
+                closeDeletePopup();
+            }
+        }
+    </script>
+</body>
+</html>

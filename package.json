@@ -1,0 +1,32 @@
+{
+  "name": "ergin-kuyumculuk-defter",
+  "version": "1.0.0",
+  "description": "Ergin Kuyumculuk Defter Uygulaması",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder",
+    "dist": "electron-builder --win"
+  },
+  "author": "Kamil Keben",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^28.1.0",
+    "electron-builder": "^24.9.1"
+  },
+  "build": {
+    "appId": "com.erginkuyumculuk.defter",
+    "productName": "Ergin Kuyumculuk Defter",
+    "win": {
+      "target": "nsis",
+      "icon": "appicon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Ergin Kuyumculuk Defter"
+    }
+  }
+}

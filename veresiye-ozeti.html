@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Veresiye Özeti</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .back-button {
+            padding: 8px 15px;
+            margin-right: 20px;
+            border: none;
+            background-color: #f0f0f0;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .back-button:hover {
+            background-color: #e0e0e0;
+        }
+
+        h1 {
+            margin: 0;
+            color: #333;
+        }
+
+        .date-range {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .date-range input[type="date"] {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin: 0 10px;
+        }
+
+        .date-range label {
+            margin-right: 10px;
+            color: #666;
+        }
+
+        .filter-button {
+            background-color: #2196F3;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .filter-button:hover {
+            background-color: #1976D2;
+        }
+
+        .export-button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .export-button:hover {
+            background-color: #45a049;
+        }
+
+        .ozet-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #fff;
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .ozet-table th,
+        .ozet-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .ozet-table th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .ozet-table tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        .toplam-tutar {
+            text-align: right;
+            padding: 15px;
+            font-weight: bold;
+            font-size: 16px;
+            color: #333;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 10px;
+        }
+
+        .toplam-tutar-deger {
+            color: #d32f2f;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <button onclick="window.location.href='veresiye.html'" class="back-button">← Geri</button>
+        <h1>Veresiye Özeti</h1>
+    </div>
+
+    <div class="date-range">
+        <label>Tarih Aralığı:</label>
+        <input type="date" id="baslangicTarihi">
+        <input type="date" id="bitisTarihi">
+        <button class="filter-button" onclick="ozetGoster()">Filtrele</button>
+        <button class="export-button" onclick="exportToExcel()">Excel'e Aktar</button>
+    </div>
+
+    <table class="ozet-table">
+        <thead>
+            <tr>
+                <th>Ad Soyad</th>
+                <th>T.C. No</th>
+                <th>Telefon No</th>
+                <th>Adres</th>
+                <th>Toplam Bilezik Gramı</th>
+                <th>Toplam Külçe Gramı</th>
+            </tr>
+        </thead>
+        <tbody id="ozet-tbody"></tbody>
+    </table>
+
+    <div class="toplam-tutar">
+        Bütün Bilezik Gramı: <span id="butun-bilezik" class="toplam-tutar-deger">0.00 gr</span>
+    </div>
+    <div class="toplam-tutar">
+        Bütün Külçe Gramı: <span id="butun-kulce" class="toplam-tutar-deger">0.00 gr</span>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', ozetGoster);
+
+        function ozetGoster() {
+            const tbody = document.getElementById('ozet-tbody');
+            tbody.innerHTML = '';
+
+            const baslangicTarihi = document.getElementById('baslangicTarihi').value;
+            const bitisTarihi = document.getElementById('bitisTarihi').value;
+
+            const musteriler = JSON.parse(localStorage.getItem('veresiyeMusterileri')) || [];
+            let butunBilezikGrami = 0;
+            let butunKulceGrami = 0;
+
+            musteriler.forEach(musteri => {
+                const islemler = JSON.parse(localStorage.getItem(`islemler_${musteri.tcNo}`)) || [];
+                let filtrelenmisIslemler = islemler;
+                
+                // Tarih filtresi varsa uygula
+                if (baslangicTarihi && bitisTarihi) {
+                    filtrelenmisIslemler = islemler.filter(islem => {
+                        const islemTarihi = new Date(islem.tarih);
+                        return islemTarihi >= new Date(baslangicTarihi) && 
+                               islemTarihi <= new Date(bitisTarihi + 'T23:59:59');
+                    });
+                }
+
+                let toplamBilezikGrami = 0;
+                let toplamKulceGrami = 0;
+
+                filtrelenmisIslemler.forEach(islem => {
+                    const gram = parseFloat(islem.gram) || 0;
+                    
+                    if (islem.altinTip === 'bilezik') {
+                        if (islem.tip === 'BORC') {
+                            toplamBilezikGrami += gram;
+                        } else if (islem.tip === 'ODEME') {
+                            toplamBilezikGrami -= gram;
+                        }
+                    } else if (islem.altinTip === 'kulce') {
+                        if (islem.tip === 'BORC') {
+                            toplamKulceGrami += gram;
+                        } else if (islem.tip === 'ODEME') {
+                            toplamKulceGrami -= gram;
+                        }
+                    }
+                });
+
+                if (toplamBilezikGrami > 0 || toplamKulceGrami > 0) {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${musteri.adSoyad || '-'}</td>
+                        <td>${musteri.tcNo || '-'}</td>
+                        <td>${musteri.telefonNo || '-'}</td>
+                        <td>${musteri.adres || '-'}</td>
+                        <td>${toplamBilezikGrami > 0 ? toplamBilezikGrami.toFixed(2) : '0.00'} gr</td>
+                        <td>${toplamKulceGrami > 0 ? toplamKulceGrami.toFixed(2) : '0.00'} gr</td>
+                    `;
+                    tbody.appendChild(row);
+
+                    if (toplamBilezikGrami > 0) butunBilezikGrami += toplamBilezikGrami;
+                    if (toplamKulceGrami > 0) butunKulceGrami += toplamKulceGrami;
+                }
+            });
+
+            document.getElementById('butun-bilezik').textContent = butunBilezikGrami.toFixed(2) + ' gr';
+            document.getElementById('butun-kulce').textContent = butunKulceGrami.toFixed(2) + ' gr';
+        }
+
+        function exportToExcel() {
+            const baslangicTarihi = document.getElementById('baslangicTarihi').value;
+            const bitisTarihi = document.getElementById('bitisTarihi').value;
+            const tarih = new Date().toLocaleString('tr-TR', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            const musteriler = JSON.parse(localStorage.getItem('veresiyeMusterileri')) || [];
+            let csvContent = '\ufeff';
+            csvContent += `Veresiye Özeti - ${tarih}\n\n`;
+            csvContent += 'Ad Soyad,T.C. No,Telefon No,Adres,Toplam Bilezik Gramı,Toplam Külçe Gramı\n';
+
+            let butunBilezikGrami = 0;
+            let butunKulceGrami = 0;
+
+            musteriler.forEach(musteri => {
+                const islemler = JSON.parse(localStorage.getItem(`islemler_${musteri.tcNo}`)) || [];
+                let filtrelenmisIslemler = islemler;
+
+                if (baslangicTarihi && bitisTarihi) {
+                    filtrelenmisIslemler = islemler.filter(islem => {
+                        const islemTarihi = new Date(islem.tarih);
+                        return islemTarihi >= new Date(baslangicTarihi) && 
+                               islemTarihi <= new Date(bitisTarihi + 'T23:59:59');
+                    });
+                }
+
+                let toplamBilezikGrami = 0;
+                let toplamKulceGrami = 0;
+
+                filtrelenmisIslemler.forEach(islem => {
+                    const gram = parseFloat(islem.gram) || 0;
+                    
+                    if (islem.altinTip === 'bilezik') {
+                        if (islem.tip === 'BORC') {
+                            toplamBilezikGrami += gram;
+                        } else if (islem.tip === 'ODEME') {
+                            toplamBilezikGrami -= gram;
+                        }
+                    } else if (islem.altinTip === 'kulce') {
+                        if (islem.tip === 'BORC') {
+                            toplamKulceGrami += gram;
+                        } else if (islem.tip === 'ODEME') {
+                            toplamKulceGrami -= gram;
+                        }
+                    }
+                });
+
+                if (toplamBilezikGrami > 0 || toplamKulceGrami > 0) {
+                    if (toplamBilezikGrami > 0) butunBilezikGrami += toplamBilezikGrami;
+                    if (toplamKulceGrami > 0) butunKulceGrami += toplamKulceGrami;
+
+                    csvContent += [
+                        musteri.adSoyad || '-',
+                        musteri.tcNo || '-',
+                        musteri.telefonNo || '-',
+                        musteri.adres || '-',
+                        (toplamBilezikGrami > 0 ? toplamBilezikGrami.toFixed(2) : '0.00') + ' gr',
+                        (toplamKulceGrami > 0 ? toplamKulceGrami.toFixed(2) : '0.00') + ' gr'
+                    ].map(field => `"${field}"`).join(',') + '\n';
+                }
+            });
+
+            csvContent += `\nBütün Bilezik Gramı,,,,"${butunBilezikGrami.toFixed(2)} gr"\n`;
+            csvContent += `Bütün Külçe Gramı,,,,"${butunKulceGrami.toFixed(2)} gr"\n`;
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            
+            let fileName = 'veresiye_ozeti';
+            if (baslangicTarihi && bitisTarihi) {
+                const baslangicFormatli = new Date(baslangicTarihi).toLocaleDateString('tr-TR').replace(/\./g, '');
+                const bitisFormatli = new Date(bitisTarihi).toLocaleDateString('tr-TR').replace(/\./g, '');
+                fileName += `_${baslangicFormatli}_${bitisFormatli}`;
+            }
+            fileName += '.csv';
+
+            link.setAttribute("href", url);
+            link.setAttribute("download", fileName);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+</body>
+</html>

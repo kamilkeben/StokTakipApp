@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Veresiye Müşteri Yönetimi Sayfası</title>
+    <link rel="stylesheet" href="toptanci.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            background-image: url('topyonback.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+
+        .form-container {
+            width: 80%;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: rgba(249, 249, 249, 0.9);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            pointer-events: auto !important;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            pointer-events: auto !important;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        .button-group {
+            margin-top: 20px;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .button-group button {
+            pointer-events: auto !important;
+        }
+
+        .save-button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .update-button {
+            background-color: #ffc107;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-button {
+            background-color: #f44336;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .save-button:hover {
+            background-color: #45a049;
+        }
+
+        .update-button:hover {
+            background-color: #ffc107;
+        }
+
+        .delete-button:hover {
+            background-color: #da190b;
+        }
+
+        h1 {
+            color: white;
+        }
+
+        /* Pop-up Stilleri */
+        .popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .popup-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            width: 400px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .popup h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .popup .form-group {
+            margin-bottom: 15px;
+        }
+
+        .popup label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .popup input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .popup-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .popup-update, .popup-delete {
+            padding: 8px 16px;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            min-width: 100px;
+        }
+
+        .popup-update {
+            background-color: #03A9F4;
+        }
+
+        .popup-delete {
+            background-color: #f44336;
+        }
+
+        .popup-cancel {
+            background-color: #9e9e9e;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            min-width: 100px;
+        }
+
+        .popup-update:hover {
+            background-color: #039BE5;
+        }
+
+        .popup-delete:hover {
+            background-color: #d32f2f;
+        }
+
+        .popup-cancel:hover {
+            background-color: #757575;
+        }
+
+        .info-text {
+            padding: 8px;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            color: #333;
+            font-size: 14px;
+            min-height: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <button onclick="window.location.href='veresiye.html'" class="back-button">← Geri</button>
+        <h1>Veresiye Müşteri Yönetimi</h1>
+    </div>
+
+    <div class="form-container">
+        <div class="container">
+            <h2>Veresiye Müşteri Yönetimi</h2>
+            <div class="form-group">
+                <label for="adSoyad">Ad Soyad:</label>
+                <input type="text" id="adSoyad" placeholder="Ad Soyad girin..." required>
+            </div>
+            <div class="form-group">
+                <label for="tcNo">T.C. No:</label>
+                <input type="text" id="tcNo" maxlength="11" placeholder="T.C. No girin..." required>
+            </div>
+            <div class="form-group">
+                <label for="telefonNo">Telefon No:</label>
+                <input type="tel" id="telefonNo" placeholder="Telefon No girin..." required>
+            </div>
+            <div class="form-group">
+                <label for="adres">Adres:</label>
+                <input type="text" id="adres" placeholder="Adres girin..." required>
+            </div>
+            <div class="button-group">
+                <button onclick="musteriEkle()" class="save-button">Müşteri Ekle</button>
+                <button onclick="openUpdatePopup()" class="update-button">Müşteri Güncelle</button>
+                <button onclick="openDeletePopup()" class="delete-button">Müşteri Sil</button>
+            </div>
+        </div>
+
+        <!-- Güncelleme Pop-up -->
+        <div id="updatePopup" class="popup">
+            <div class="popup-content">
+                <h3>Müşteri Güncelleme</h3>
+                <div class="form-group">
+                    <label for="updateSearchInput">Ad Soyad:</label>
+                    <input type="text" id="updateSearchInput" placeholder="Ad Soyad girin...">
+                </div>
+                <div id="updateForm" style="display: none;">
+                    <div class="form-group">
+                        <label for="updateAdSoyad">Ad Soyad:</label>
+                        <input type="text" id="updateAdSoyad" placeholder="Ad Soyad girin...">
+                    </div>
+                    <div class="form-group">
+                        <label for="updateTcNo">T.C. No:</label>
+                        <input type="text" id="updateTcNo" placeholder="T.C. No girin..." maxlength="11">
+                    </div>
+                    <div class="form-group">
+                        <label for="updateTelefonNo">Telefon No:</label>
+                        <input type="tel" id="updateTelefonNo" placeholder="Telefon No girin...">
+                    </div>
+                    <div class="form-group">
+                        <label for="updateAdres">Adres:</label>
+                        <input type="text" id="updateAdres" placeholder="Adres girin...">
+                    </div>
+                </div>
+                <div class="popup-buttons">
+                    <button onclick="searchUpdateMusteri()" id="updateSearchBtn" class="popup-update">Müşteri Ara</button>
+                    <button onclick="updateMusteri()" id="updateSaveBtn" class="popup-update" style="display: none;">Güncelle</button>
+                    <button onclick="closeUpdatePopup()" class="popup-cancel">İptal</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Silme Pop-up -->
+        <div id="deletePopup" class="popup">
+            <div class="popup-content">
+                <h3>Müşteri Silme</h3>
+                <div class="form-group">
+                    <label for="deleteSearchInput">Ad Soyad:</label>
+                    <input type="text" id="deleteSearchInput" placeholder="Ad Soyad girin...">
+                </div>
+                <div id="deleteForm" style="display: none;">
+                    <div class="form-group">
+                        <label>Ad Soyad:</label>
+                        <div id="deleteAdSoyad" class="info-text"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>T.C. No:</label>
+                        <div id="deleteTcNo" class="info-text"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>Telefon No:</label>
+                        <div id="deleteTelefonNo" class="info-text"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>Adres:</label>
+                        <div id="deleteAdres" class="info-text"></div>
+                    </div>
+                </div>
+                <div class="popup-buttons">
+                    <button onclick="searchDeleteMusteri()" id="deleteSearchBtn" class="popup-delete">Müşteri Ara</button>
+                    <button onclick="deleteMusteri()" id="deleteSaveBtn" class="popup-delete" style="display: none;">Sil</button>
+                    <button onclick="closeDeletePopup()" class="popup-cancel">İptal</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="veresiye.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('adSoyad').focus();
+        });
+
+        function openUpdatePopup() {
+            document.getElementById('updatePopup').style.display = 'block';
+            document.getElementById('updateSearchInput').focus();
+        }
+
+        function closeUpdatePopup() {
+            document.getElementById('updatePopup').style.display = 'none';
+            document.getElementById('updateSearchInput').value = '';
+            document.getElementById('updateForm').style.display = 'none';
+            document.getElementById('updateSearchBtn').style.display = 'block';
+            document.getElementById('updateSaveBtn').style.display = 'none';
+            
+            if (document.getElementById('updateAdSoyad')) {
+                document.getElementById('updateAdSoyad').value = '';
+                document.getElementById('updateTcNo').value = '';
+                document.getElementById('updateTelefonNo').value = '';
+                document.getElementById('updateAdres').value = '';
+            }
+        }
+
+        function openDeletePopup() {
+            document.getElementById('deletePopup').style.display = 'block';
+            document.getElementById('deleteSearchInput').focus();
+        }
+
+        function closeDeletePopup() {
+            document.getElementById('deletePopup').style.display = 'none';
+            document.getElementById('deleteSearchInput').value = '';
+            document.getElementById('deleteForm').style.display = 'none';
+            document.getElementById('deleteSearchBtn').style.display = 'block';
+            document.getElementById('deleteSaveBtn').style.display = 'none';
+        }
+
+        function searchUpdateMusteri() {
+            const searchText = document.getElementById('updateSearchInput').value.toLowerCase();
+            if (!searchText) {
+                alert('Lütfen arama metni girin!');
+                return;
+            }
+
+            const musteriler = JSON.parse(localStorage.getItem('veresiyeMusterileri')) || [];
+            const musteri = musteriler.find(m => m.adSoyad.toLowerCase().includes(searchText));
+
+            if (!musteri) {
+                alert('Müşteri bulunamadı!');
+                return;
+            }
+
+            // Form alanlarını doldur
+            document.getElementById('updateAdSoyad').value = musteri.adSoyad || '';
+            document.getElementById('updateTcNo').value = musteri.tcNo || '';
+            document.getElementById('updateTelefonNo').value = musteri.telefonNo || '';
+            document.getElementById('updateAdres').value = musteri.adres || '';
+
+            // Orijinal TC No'yu sakla
+            document.getElementById('updateTcNo').dataset.originalTcNo = musteri.tcNo;
+
+            // Güncelleme formunu ve butonunu göster
+            document.getElementById('updateForm').style.display = 'block';
+            document.getElementById('updateSearchBtn').style.display = 'none';
+            document.getElementById('updateSaveBtn').style.display = 'block';
+        }
+
+        function updateMusteri() {
+            const newAdSoyad = document.getElementById('updateAdSoyad').value;
+            const newTcNo = document.getElementById('updateTcNo').value;
+            const originalTcNo = document.getElementById('updateTcNo').dataset.originalTcNo;
+            const telefon = document.getElementById('updateTelefonNo').value.replace(/\D/g, ''); // Sadece rakamları al
+            const adres = document.getElementById('updateAdres').value;
+
+            if (!newAdSoyad || !newTcNo || !telefon || !adres) {
+                alert('Lütfen tüm alanları doldurun!');
+                return;
+            }
+
+            // TC No formatını kontrol et
+            if (newTcNo.length !== 11) {
+                alert('TC No 11 haneli olmalıdır!');
+                return;
+            }
+
+            const musteriler = JSON.parse(localStorage.getItem('veresiyeMusterileri')) || [];
+
+            // Eğer TC No değiştiyse ve yeni TC No zaten varsa
+            if (newTcNo !== originalTcNo && 
+                musteriler.some(m => m.tcNo === newTcNo)) {
+                alert('Bu TC No zaten kullanılıyor!');
+                return;
+            }
+
+            const musteriIndex = musteriler.findIndex(m => m.tcNo === originalTcNo);
+
+            if (musteriIndex === -1) {
+                alert('Müşteri bulunamadı!');
+                return;
+            }
+
+            // Müşteriyi güncelle
+            musteriler[musteriIndex] = {
+                ...musteriler[musteriIndex],
+                adSoyad: newAdSoyad,
+                tcNo: newTcNo,
+                telefonNo: formatPhoneNumber(telefon),
+                adres: adres
+            };
+
+            // İşlemleri de güncelle
+            const islemler = JSON.parse(localStorage.getItem(`islemler_${originalTcNo}`)) || [];
+            if (islemler.length > 0) {
+                localStorage.setItem(`islemler_${newTcNo}`, JSON.stringify(islemler));
+                localStorage.removeItem(`islemler_${originalTcNo}`);
+            }
+
+            localStorage.setItem('veresiyeMusterileri', JSON.stringify(musteriler));
+            alert('Müşteri başarıyla güncellendi!');
+            closeUpdatePopup();
+        }
+
+        function searchDeleteMusteri() {
+            const searchText = document.getElementById('deleteSearchInput').value.toLowerCase();
+            if (!searchText) {
+                alert('Lütfen arama metni girin!');
+                return;
+            }
+
+            const musteriler = JSON.parse(localStorage.getItem('veresiyeMusterileri')) || [];
+            const musteri = musteriler.find(m => m.adSoyad.toLowerCase().includes(searchText));
+
+            if (!musteri) {
+                alert('Müşteri bulunamadı!');
+                return;
+            }
+
+            // Form alanlarını doldur
+            document.getElementById('deleteAdSoyad').textContent = musteri.adSoyad || '-';
+            document.getElementById('deleteTcNo').textContent = musteri.tcNo || '-';
+            document.getElementById('deleteTelefonNo').textContent = musteri.telefonNo || '-';
+            document.getElementById('deleteAdres').textContent = musteri.adres || '-';
+
+            // TC No'yu sakla (silme işlemi için)
+            document.getElementById('deleteTcNo').dataset.tcNo = musteri.tcNo;
+
+            // Silme formunu ve butonunu göster
+            document.getElementById('deleteForm').style.display = 'block';
+            document.getElementById('deleteSearchBtn').style.display = 'none';
+            document.getElementById('deleteSaveBtn').style.display = 'block';
+        }
+
+        function deleteMusteri() {
+            const tcNo = document.getElementById('deleteTcNo').dataset.tcNo;
+            const adSoyad = document.getElementById('deleteAdSoyad').textContent;
+
+            if (!tcNo) {
+                alert('Müşteri bilgisi bulunamadı!');
+                return;
+            }
+
+            const onay = confirm(`${adSoyad} isimli müşteriyi silmek istediğinize emin misiniz?`);
+            if (!onay) return;
+
+            const musteriler = JSON.parse(localStorage.getItem('veresiyeMusterileri')) || [];
+            const musteriIndex = musteriler.findIndex(m => m.tcNo === tcNo);
+
+            if (musteriIndex === -1) {
+                alert('Müşteri bulunamadı!');
+                return;
+            }
+
+            // Müşteriyi ve işlemlerini sil
+            musteriler.splice(musteriIndex, 1);
+            localStorage.setItem('veresiyeMusterileri', JSON.stringify(musteriler));
+            localStorage.removeItem(`islemler_${tcNo}`);
+
+            alert('Müşteri başarıyla silindi!');
+            closeDeletePopup();
+        }
+
+        // TC No sadece rakam girişi
+        document.getElementById('tcNo').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/[^0-9]/g, '');
+            if (value.length > 11) value = value.slice(0, 11);
+            e.target.value = value;
+        });
+
+        document.getElementById('updateTcNo').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/[^0-9]/g, '');
+            if (value.length > 11) value = value.slice(0, 11);
+            e.target.value = value;
+        });
+
+        // Telefon numarası formatı
+        document.getElementById('telefonNo').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length >= 10) {
+                value = value.slice(0, 10);
+                value = value.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3');
+            }
+            e.target.value = value;
+        });
+
+        // Telefon numarası formatı - Güncelleme formu için
+        document.getElementById('updateTelefonNo').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length >= 10) {
+                value = value.slice(0, 10);
+                value = value.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3');
+            }
+            e.target.value = value;
+        });
+
+        function musteriEkle() {
+            // Eğer kaydet butonu aktifse, yeni müşteri eklemeye izin verme
+            if (document.querySelector('.save-button').textContent === 'Kaydet') {
+                alert('Lütfen önce mevcut güncellemeyi tamamlayın veya formu temizleyin!');
+                return;
+            }
+
+            const tcNo = document.getElementById('tcNo').value;
+            const adSoyad = document.getElementById('adSoyad').value;
+            const telefonNo = document.getElementById('telefonNo').value;
+            const adres = document.getElementById('adres').value;
+
+            if (!tcNo || !adSoyad || !telefonNo) {
+                alert('Lütfen zorunlu alanları doldurun!');
+                return;
+            }
+
+            const musteriler = JSON.parse(localStorage.getItem('veresiyeMusterileri')) || [];
+            
+            if (musteriler.some(m => m.tcNo === tcNo)) {
+                alert('Bu T.C. No ile kayıtlı müşteri zaten var!');
+                return;
+            }
+
+            const yeniMusteri = {
+                id: Date.now().toString(),
+                tcNo,
+                adSoyad,
+                telefonNo,
+                adres
+            };
+
+            musteriler.push(yeniMusteri);
+            localStorage.setItem('veresiyeMusterileri', JSON.stringify(musteriler));
+            alert('Müşteri başarıyla eklendi!');
+            formuTemizle();
+        }
+
+        function formuTemizle() {
+            document.getElementById('adSoyad').value = '';
+            document.getElementById('tcNo').value = '';
+            document.getElementById('telefonNo').value = '';
+            document.getElementById('adres').value = '';
+            document.getElementById('adSoyad').focus();
+
+            // Butonları sıfırla
+            document.querySelector('.save-button').textContent = 'Müşteri Ekle';
+            document.querySelector('.save-button').onclick = musteriEkle;
+        }
+
+        // Pop-up dışına tıklandığında kapatma
+        window.onclick = function(event) {
+            const updatePopup = document.getElementById('updatePopup');
+            const deletePopup = document.getElementById('deletePopup');
+            if (event.target === updatePopup) {
+                closeUpdatePopup();
+            }
+            if (event.target === deletePopup) {
+                closeDeletePopup();
+            }
+        }
+
+        function formatPhoneNumber(phoneNumber) {
+            const cleaned = phoneNumber.replace(/\D/g, '');
+            const match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
+            if (match) {
+                return `(${match[1]}) ${match[2]}-${match[3]}`;
+            }
+            return phoneNumber;
+        }
+    </script>
+</body>
+</html>
